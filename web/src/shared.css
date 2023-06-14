@@ -31,3 +31,7 @@ a, a:visited {
 .discord-font {
     font-family: "Whitney", sans-serif;
 }
+
+.error {
+    color: #ED4245;
+}

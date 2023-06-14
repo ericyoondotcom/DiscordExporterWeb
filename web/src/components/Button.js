@@ -5,6 +5,7 @@ import Twemoji from "react-twemoji";
 
 function Button({
     content,
+    small,
     emoji,
     emojiRight,
     onClick,
@@ -15,7 +16,7 @@ function Button({
 
     return (
         <button
-            className="custom-ui"
+            className={`custom-ui ${small ? "small" : ""}`}
             onClick={onClick}
         >
             {!emojiRight && emojiElem}
@@ -30,12 +31,14 @@ Button.propTypes = {
     emoji: PropTypes.string,
     emojiRight: PropTypes.bool,
     onClick: PropTypes.func,
+    small: PropTypes.bool,
 };
 
 Button.defaultProps = {
     content: "Button",
     emojiRight: false,
     emoji: "❓",
+    small: false,
 }
 
 export default Button;

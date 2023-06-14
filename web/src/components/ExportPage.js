@@ -1,14 +1,43 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 import "./stylesheets/ExportPage.css";
+import moment from "moment";
 import BlurpleBackground from "./BlurpleBackground";
 import Button from "./Button";
 import Input from "./Input";
 import Spacer from "./Spacer";
 import Center from "./Center";
+import { runExport } from "../helpers/export";
+import ProgressBar from "./ProgressBar";
 
 function ExportPage() {
-	const [token, setToken] = React.useState("");
-	const [channelId, setChannelId] = React.useState("");
+	const urlParams = new URLSearchParams(window.location.search);
+
+	const [token, setToken] = useState(urlParams.get("token") || "");
+	const [channelId, setChannelId] = useState(urlParams.get("channel") || "");
+	const [startTime, setStartTime] = useState("");
+	const [progress, setProgress] = useState(0);
+	const [error, setError] = useState(null);
+
+	const onExportClick = useCallback(async () => {
+		try {
+			await runExport(token, channelId, setProgress, startTime);
+		} catch(e) {
+			setError(e.toString());
+			return;
+		}
+		setProgress(0);
+	}, [token, channelId, setProgress, startTime, setError]);
+
+	const startDateToggle = useCallback(() => {
+		if(startTime){
+			setStartTime(null);
+		}
+		else {
+			const date = new Date();
+			date.setDate(date.getDate() - 7);
+			setStartTime(date);
+		}
+	}, [startTime, setStartTime]);
 
 	return (
 		<div id="export-page" className="rails">
@@ -59,15 +88,51 @@ function ExportPage() {
 				/>
 				<Spacer height="30px" />
 
-				<h2>3. Export</h2>
+				<h2>3. Options</h2>
+				<Spacer height="10px" />
+				<Button
+					small
+					content={startTime ? "Include all messages" : "Specify start time"}
+					emoji={startTime ? "❌" : "🕒"}
+					onClick={startDateToggle}
+				/>
+				{
+					startTime && (
+						<>
+							<Spacer height="10px" />
+							<Input
+								small
+								type="datetime-local"
+								value={moment(startTime).format("YYYY-MM-DDTHH:mm")}
+								onChange={e => setStartTime(new Date(e.target.value))}
+							/>
+						</>
+					)
+				}
+				<Spacer height="30px" />
+				<h2>4. Export</h2>
 				<Spacer height="10px" />
 				<p>
 					Once we've gathered all of the messages (will take a while), you'll get your download in CSV format.
 				</p>
 				<Spacer height="30px" />
-				<Center>
-					<Button content="Export" emoji="➡️" emojiRight />
-				</Center>
+				{
+					progress === 0 && (
+						<Center>
+							<Button content="Export" emoji="➡️" emojiRight onClick={onExportClick} />
+						</Center>
+					)
+				}
+				{
+					progress > 0 && (
+						<ProgressBar progress={progress} />
+					)
+				}
+				{
+					error && (
+						<p className="error">{error}</p>
+					)
+				}
 			</BlurpleBackground>
 		</div>
     );

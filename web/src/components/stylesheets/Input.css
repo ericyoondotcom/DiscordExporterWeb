@@ -10,10 +10,16 @@ input.custom-ui {
     outline: none;
     font-family: "Lexend", sans-serif;
     transition: border-color 0.2s;
+    color-scheme: dark;
 }
 input.custom-ui::placeholder {
     color: #FFFFFFAA;
 }
 input.custom-ui:focus {
     border-color: #5865f2;
+}
+
+input.custom-ui.small {
+    font-size: 18px;
+    padding: 10px;
 }

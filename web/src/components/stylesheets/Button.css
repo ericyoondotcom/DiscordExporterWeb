@@ -31,3 +31,15 @@ button.custom-ui:hover {
 button.custom-ui:active {
     background-color: hsl(235, 58%, 73%);
 }
+
+button.custom-ui.small {
+    background-color: #111111;
+    padding: 0 15px;
+    height: 40px;
+}
+button.custom-ui.small .button-content {
+    font-size: 16px;
+}
+button.custom-ui.small .button-emoji img {
+    max-height: 23px;
+}

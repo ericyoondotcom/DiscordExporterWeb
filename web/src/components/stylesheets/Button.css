@@ -1,0 +1,33 @@
+button.custom-ui {
+    background-color: hsl(235, 86%, 65%);
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+    border: none;
+    border-radius: 30px;
+    padding: 0 25px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    justify-content: space-between;
+    align-items: center;
+    height: 60px;
+    font-family: "Lexend", sans-serif;
+    transition: background-color 0.2s;
+}
+
+.button-emoji img {
+    max-height: 35px;
+}
+
+.button-content {
+    font-size: 25px;
+}
+
+button.custom-ui:hover {
+    background-color: hsl(235, 86%, 70%);
+}
+button.custom-ui:active {
+    background-color: hsl(235, 58%, 73%);
+}

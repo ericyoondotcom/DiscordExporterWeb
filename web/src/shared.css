@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@400;700&display=swap');
+@import url('https://fonts.cdnfonts.com/css/whitney-2');
+
+body {
+    font-family: "Lexend", sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6, p {
+    margin: 0;
+}
+
+h1 {
+    font-size: 50px;
+}
+h2 {
+    font-size: 30px;
+}
+p, ol, ul {
+    font-size: 17px;
+    line-height: 27px;
+}
+
+a, a:visited {
+    color: inherit;
+}
+
+.rails {
+    padding: 10vh 30vw;
+}
+
+.discord-font {
+    font-family: "Whitney", sans-serif;
+}

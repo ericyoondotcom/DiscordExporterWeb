@@ -1,0 +1,19 @@
+input.custom-ui {
+    border: 2px solid #888888;
+    background-color: #111111;
+    color: #FFFFFF;
+    border-radius: 4px;
+    padding: 20px;
+    font-size: 22px;
+    width: 100%;
+    box-sizing: border-box;
+    outline: none;
+    font-family: "Lexend", sans-serif;
+    transition: border-color 0.2s;
+}
+input.custom-ui::placeholder {
+    color: #FFFFFFAA;
+}
+input.custom-ui:focus {
+    border-color: #5865f2;
+}

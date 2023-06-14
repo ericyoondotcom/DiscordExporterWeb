@@ -7,8 +7,6 @@ export async function sendRequestWithAuthenticationAndRateLimiting(url, token) {
         },
     });
 
-    res.headers.forEach((value, key) => console.log(key, value));
-
     const remainingRequestCount = parseInt(res.headers.get("X-RateLimit-Remaining"));
     const resetAfterDelaySecs = parseFloat(res.headers.get("X-RateLimit-Reset-After"));
     
@@ -25,7 +23,11 @@ export async function sendRequestWithAuthenticationAndRateLimiting(url, token) {
             resetAfterDelaySecs + 1,
             60
         );
-    await new Promise(resolve => setTimeout(resolve, delay * 1000));
+    
+    if(!isNaN(delay)){
+        console.log("Waiting for rate limit: " + delay + " secs");
+        await new Promise(resolve => setTimeout(resolve, delay * 1000));
+    }
 
     return await res.json();
 }
@@ -36,14 +38,18 @@ export async function getMessagesFromChannel(channelId, token, setProgress, star
 
     let firstMessage = null;
     let nextPageSnowflake = startTime ? dateTimeToSnowflake(startTime) : "0";
+
+    let allMessages = [];
+
     while(true) {
         const paramObject = {
-            limit: 3
+            limit: 100
         };
         if(nextPageSnowflake) paramObject.after = nextPageSnowflake;
         const searchParams = new URLSearchParams(paramObject);
         const url = `channels/${channelId}/messages?${searchParams.toString()}`;
-        const messages = await sendRequestWithAuthenticationAndRateLimiting(url, token);
+        let messages = await sendRequestWithAuthenticationAndRateLimiting(url, token);
+        messages = messages.reverse();
 
         if(messages.length === 0) break;
 
@@ -53,9 +59,11 @@ export async function getMessagesFromChannel(channelId, token, setProgress, star
         const totalExportTime = new Date(lastMessage.timestamp).getTime() - new Date(firstMessage.timestamp).getTime();
         const completedExportTime = new Date(messages[messages.length - 1].timestamp).getTime() - new Date(firstMessage.timestamp).getTime();
 
-        setProgress(completedExportTime / totalExportTime);
-        console.log(messages);
+        setProgress(Math.max(completedExportTime / totalExportTime, 0.01));
+        allMessages = allMessages.concat(messages);
     }
+
+    return allMessages;
 }
 
 export async function getLastMessageFromChannel(channelId, token) {

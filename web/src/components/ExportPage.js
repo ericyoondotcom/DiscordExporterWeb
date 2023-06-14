@@ -15,18 +15,29 @@ function ExportPage() {
 	const [token, setToken] = useState(urlParams.get("token") || "");
 	const [channelId, setChannelId] = useState(urlParams.get("channel") || "");
 	const [startTime, setStartTime] = useState("");
+	const [basicData, setBasicData] = useState(false);
+	const [tokenIsBot, setTokenIsBot] = useState(false);
 	const [progress, setProgress] = useState(0);
+	const [statusText, setStatusText] = useState("");
 	const [error, setError] = useState(null);
 
 	const onExportClick = useCallback(async () => {
 		try {
-			await runExport(token, channelId, setProgress, startTime);
+			await runExport(
+				tokenIsBot ? `Bot ${token}` : token,
+				channelId,
+				startTime,
+				basicData,
+				setProgress,
+				setStatusText
+			);
 		} catch(e) {
 			setError(e.toString());
 			return;
 		}
 		setProgress(0);
-	}, [token, channelId, setProgress, startTime, setError]);
+		setStatusText("");
+	}, [token, tokenIsBot, channelId, setProgress, basicData, startTime, setError, setStatusText]);
 
 	const startDateToggle = useCallback(() => {
 		if(startTime){
@@ -67,9 +78,16 @@ function ExportPage() {
 					carefully inspecting the Networking tab in the developer console.
 				</p>
 				<Spacer height="30px" />
-				
+				{/* TODO: Bots are not supported from a web context. See https://github.com/discord/discord-api-docs/issues/2078#issuecomment-697829305 */}
+				{/* <Button
+					small
+					content={tokenIsBot ? "Use user token instead" : "Use bot token instead"}
+					emoji={tokenIsBot ? "🧒" : "🤖"}
+					onClick={() => setTokenIsBot(!tokenIsBot)}
+				/> */}
+				<Spacer height="10px" />
 				<Input
-					placeholder="Discord token"
+					placeholder={tokenIsBot ? "Bot token" : "Discord token"}
 					value={token}
 					onChange={e => setToken(e.target.value)}
 				/>
@@ -109,11 +127,18 @@ function ExportPage() {
 						</>
 					)
 				}
+				<Spacer height="10px" />
+				<Button
+					small
+					content={basicData ? "Export full data" : "Export basic subset of data (smaller file)"}
+					emoji={basicData ? "🖐️" : "☝️"}
+					onClick={() => setBasicData(!basicData)}
+				/>
 				<Spacer height="30px" />
 				<h2>4. Export</h2>
 				<Spacer height="10px" />
 				<p>
-					Once we've gathered all of the messages (will take a while), you'll get your download in CSV format.
+					Once we've gathered all of the messages (will take a while), you'll get your download in JSON format.
 				</p>
 				<Spacer height="30px" />
 				{
@@ -126,6 +151,11 @@ function ExportPage() {
 				{
 					progress > 0 && (
 						<ProgressBar progress={progress} />
+					)
+				}
+				{
+					statusText && (
+						<p>{statusText}</p>
 					)
 				}
 				{
